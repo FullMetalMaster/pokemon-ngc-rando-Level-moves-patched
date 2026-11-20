@@ -143,8 +143,11 @@ namespace Randomizer.Shufflers
             if (moveSetCount == 0)
                 moveSetCount = 1;
 
-            // increase the level until there's enough moves for them
-            while (levelUpMoves.Count() < moveSetCount && level <= 100)
+            // Only look past the pokemon's real level when every pokemon has to have four moves, otherwise a
+            // low level pokemon is handed moves it would only learn at level 30 or higher. A pokemon whose first
+            // move comes after its level still needs one move, so it borrows its earliest ones.
+            var requiredMoveCount = options.ForceFourMoves ? moveSetCount : 1;
+            while (levelUpMoves.Count() < requiredMoveCount && level <= 100)
                 levelUpMoves = extractedGame.PokemonList[pokemon.Pokemon].CurrentLevelMoves(++level);
 
             // still nothing, add a random move

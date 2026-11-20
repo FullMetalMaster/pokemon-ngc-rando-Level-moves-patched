@@ -80,7 +80,18 @@ namespace Randomizer.Shufflers
                         if (!randomizedPokemon.Contains(pokemon.Index))
                         {
                             randomizedPokemon.Add(pokemon.Index);
+
+                            var speciesBeforeAdjust = pokemon.Pokemon;
+                            var levelBeforeAdjust = pokemon.Level;
                             AdjustPokemonLevels(random, settings, pokemon, extractedGame);
+
+                            // The moves were picked for the species and level the pokemon had when it was randomized.
+                            // Forcing a full evolution or boosting the level afterwards changes both, so pick the moves
+                            // again or the pokemon keeps a moveset that belongs to its earlier form and level.
+                            if (settings.RandomizePokemon && (pokemon.Pokemon != speciesBeforeAdjust || pokemon.Level != levelBeforeAdjust))
+                            {
+                                Helpers.UpdateMoves(random, settings.MoveSetOptions, pokemon, extractedGame);
+                            }
                         }
 
                         Logger.Log($"{extractedGame.PokemonList[pokemon.Pokemon].Name}\n");
